@@ -1,32 +1,59 @@
 [tool.poetry]
-name = "oss-project"
-version = "0.1.0"
+name = "vectory"
+version = "0.0.a2"
 description = "Streamline the benchmark and experimentation process of your models that rely on generating embeddings"
-authors = ["Theo Hintz <thintz.smc@gmail.com>"]
+authors = ["Pento <hello@pento.ai>"]
+readme = "README.md"
+
+[tool.poetry.scripts]
+vectory = "vectory.cli:app"
 
 [tool.poetry.dependencies]
-python = "^3.8"
+python = ">=3.7.1,<=3.9.7"
+elasticsearch = "7.16.3"
+tqdm = "^4.61.1"
+typer = "^0.4.0"
+elasticsearch-dsl = ">=7.0.0,<8.0.0"
+peewee = "^3.14.10"
+pandas = "^1.3.5"
+numpy = ">=1.14.5"
+pynndescent = "^0.5.6"
+matplotlib = ">=3.3"
+bokeh = "<=2.2.3"
+streamlit = "^1.8.1, <1.12.0"
+Jinja2 = "3.0.1"
+streamlit-bokeh-events = "^0.1.2"
+umap-learn = "^0.5.3"
+plotly = "^5.9.0"
+Pillow = "^9.2.0"
+coolname = "^1.1.0"
+tabulate = "^0.8.10"
+psutil = "^5.9.1"
+python-on-whales = "^0.52.0"
 
 [tool.poetry.dev-dependencies]
-black = "^21.12b0"
-flake8 = "^4.0.1"
-isort = "^5.10.1"
+black = "*"
+flake8 = "*"
+isort = "*"
+ipykernel = "*"
+ipython = "*"
+ipdb = "*"
+mypy = "*"
 pytest = "^6.2.5"
-ipykernel = "^6.7.0"
-ipython = "^8.0.1"
-ipdb = "^0.13.9"
-mypy = "^0.931"
 python-dotenv = "^0.19.2"
+pytest-cov = "^3.0.0"
+types-tabulate = "^0.8.11"
 
 [tool.isort]
+profile = "black"
+src_paths = "isort,test"
+
+[tool.black]
 multi_line_output = 3
 include_trailing_comma = true
 force_grid_wrap = 0
 use_parentheses = true
 line_length = 88
-
-[tool.black]
-line-length = 88
 target-version = ['py38']
 
 [build-system]

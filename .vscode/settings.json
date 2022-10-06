@@ -1,29 +1,23 @@
 {
-    // 
-    // Editor settings
-    // 
-    "editor.formatOnSave": true,
-    "editor.rulers": [
-        88
-    ],
-    "editor.wordWrapColumn": 88,
-    // 
-    // Python settings
-    // 
-    "python.formatting.provider": "black",
-    "python.linting.enabled": true,
-    "python.testing.pytestEnabled": true,
-    "python.linting.pylintEnabled": false,
-    "python.linting.flake8Enabled": true,
-    "python.linting.flake8Args": [
-        "--max-line-length",
-        "88"
-    ],
-    "python.languageServer": "Pylance",
-    "python.linting.mypyEnabled": true,
-    "spellright.language": [],
-    "spellright.documentTypes": [
-        "markdown",
-        "latex"
-    ],
+  //
+  // Editor settings
+  //
+  "editor.formatOnSave": true,
+  "editor.rulers": [88],
+  "editor.wordWrapColumn": 88,
+  //
+  // Python settings
+  //
+  "python.formatting.provider": "black",
+  "python.linting.enabled": true,
+  "python.testing.pytestEnabled": true,
+  "python.linting.pylintEnabled": false,
+  "python.linting.flake8Enabled": true,
+  "python.linting.flake8Args": ["--max-line-length", "88"],
+  "python.languageServer": "Pylance",
+  "python.linting.mypyEnabled": true,
+
+  "editor.codeActionsOnSave": {
+    "source.organizeImports": true
+  }
 }

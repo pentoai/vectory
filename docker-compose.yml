@@ -1,0 +1,25 @@
+version: '3'
+services:
+  es-embeddings-db:
+    build: ./
+    container_name: es-embeddings-db
+    environment:
+      - "discovery.type=single-node"
+      - "ES_JAVA_OPTS=-Xms2g -Xmx2g"
+      - "xpack.security.enabled=false"
+    volumes:
+      - esdata01:/usr/share/elasticsearch/data:rw
+    ports:
+      - "9200:9200"
+      - "9300:9300"
+    networks:
+      - elastic
+    restart: unless-stopped
+
+volumes:
+  esdata01:
+    driver: local
+
+networks:
+  elastic:
+    driver: bridge

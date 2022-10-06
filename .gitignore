@@ -112,6 +112,7 @@ venv/
 ENV/
 env.bak/
 venv.bak/
+data/
 
 # Spyder project settings
 .spyderproject
@@ -140,3 +141,13 @@ cython_debug/
 # Model weights
 *.pth
 *.pt
+
+# Images
+*.jpg
+*.png
+
+# research/
+vis_research/
+data/
+*.png
+*.db
