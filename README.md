@@ -15,11 +15,18 @@
     </a>
 </p>
 
+<p align="center">
+  <img src="assets/overview.gif" alt="animated" />
+</p>
+
+<!-- ![overview](assets/overview.gif) -->
+
 Vectory provides a collection of tools to **track and compare embedding versions**.
 
 Being able to visualize and register each experiment is a crucial part of developing successful models. Vectory is a tool designed by and for machine learning engineers to handle embedding experiments with little overhead.
 
 ### Key features:
+
 - **Embedding linage**. Keep track of what data and models were used to generate embeddings.
 - **Compare performance**. Compare metrics between different vector spaces.
 - **Ease of use**. Easy usage through the CLI, Python and GUI interfaces.
@@ -27,12 +34,12 @@ Being able to visualize and register each experiment is a crucial part of develo
 - **Persistence**. Simple local state persistence using SQLite.
 
 # Table of Contents
+
 1. [Installation](#installation)
 2. [Demo](#demo)
 3. [Usage](#usage)
 4. [Troubleshooting](troubleshooting.md)
 5. [License](#license)
-
 
 # Installation
 
@@ -50,25 +57,34 @@ Vectory uses Elasticsearch to load embeddings and then search for them.
 
 To start the engine you will need to install Docker and start its daemon.
 After that, just run:
+
 ```console
 vectory elastic up --detach
 ```
 
 and you can turn it off with:
+
 ```console
 vectory elastic down
 ```
 
 # Demo
 
+<p align="center">
+  <img src="assets/intro.gif" alt="animated" />
+</p>
+
 After installing vectory with the GUI dependencies, you can play with the demo cases to get a feel of the toolkit.
+
 - Tiny-imagenet computer vision dataset embeddings made from pretrained models ResNet50 and ConvNext-tiny.
 - Imdb nlp dataset embeddings made from pretrained models BERT and RoBERTa.
 
 In order to download the data and set up the demo, run the following command:
+
 ```console
-vectory demo 
+vectory demo
 ```
+
 You can specify the demo dataset with the `--dataset-name` argument.
 
 Run the Streamlit viualization app:
@@ -76,6 +92,10 @@ Run the Streamlit viualization app:
 ```console
 vectory run
 ```
+
+<p align="center">
+  <img src="assets/zoom.gif" alt="animated" />
+</p>
 
 # Usage
 
@@ -105,6 +125,7 @@ Vectory helps you to organize and analyze the obtained embeddings for each datas
 ### Create
 
 Create datasets, experiments and embedding spaces:
+
 ```console
 vectory add --dataset [path_to_csv] --embeddings [path_to_npz]
 ```
@@ -123,14 +144,16 @@ vectory embeddings load [index_name] [embedding_space_name]
 
 You can specify the model name, the similarity function, the number of threads, the chunk size and the hyperparameters for the kNN search. You can see all the options with the `--help` flag.
 
-
 ### Search
 
 Get all your datasets, experiments, embedding spaces and indices:
+
 ```console
 vectory ls
 ```
+
 List all the indices:
+
 ```console
 vectory embeddings list-indices
 ```
@@ -138,28 +161,33 @@ vectory embeddings list-indices
 ### Delete
 
 Delete datasets:
+
 ```console
 vectory dataset delete [dataset_name]
 ```
 
 Experiments:
+
 ```console
-vectory experiment delete [experiment_name] 
+vectory experiment delete [experiment_name]
 ```
 
 Embedding Spaces:
+
 ```console
-vectory space delete [embedding_space_name] 
+vectory space delete [embedding_space_name]
 ```
 
 You can delete elements associated to these objects and their respective indices adding `--recursive`.
 
 Indices:
+
 ```console
 vectory embeddings delete-index [index_name]
 ```
 
 All indices:
+
 ```console
 vectory embeddings delete-all-indices
 ```
@@ -179,7 +207,6 @@ vectory compare [embedding_space_1_name] [embedding_space_2_name] --precompute
 ```
 
 You can specify the metric to use for kNN search in each of the embedding spaces, calculate similarity histogram and allow precoumpute.
-
 
 ## Python API
 
@@ -223,6 +250,7 @@ load_index(
     embedding_space_name=EMBEDDING_SPACE_NAME,
 )
 ```
+
 The `dataset`, `experiment` and `embedding_space` objects have the `.model.name` attribute, so both the variable and the attribute can be used for specifying the name.
 
 Additionally, you can specify the desired mapping to load the index with. This determies whether `cosine` or `euclidean` similarity will be used for the kNN search, as well as the model for the kNN search. Using an `exact` model instead of the `lsh` option will make the search slower, but more accurate. The `lsh` model and the `cosine` similarity are the default options. To see all the available mappings, check the possible options from `vectory.es.api.Mapping`.
@@ -230,6 +258,7 @@ Additionally, you can specify the desired mapping to load the index with. This d
 ### Search
 
 Get all your datasets, experiments, embedding spaces and indices:
+
 ```python
 from vectory.db.models import (
     DatasetModel,
@@ -246,6 +275,7 @@ indices = Query(ElasticSearchIndexModel).get()
 ```
 
 You can also get a specific dataset, expeiment, space or index by specifying an attribute:
+
 ```python
 dataset = Query(DatasetModel).get(name=DATASET_NAME)[0]
 ```
@@ -267,7 +297,7 @@ The same can be done for experiments, embedding spaces and indices by using the 
 
 ### Compare
 
-With Vectory you can measure how similar two embedding spaces are. The similarity between two embedding spaces is the mean of the local neighbourhood similarity of every point, which is the IoU of the 10 nearest neighbours.  More info about comparing embedding spaces [here](http://vis.csail.mit.edu/pubs/embedding-comparator/).
+With Vectory you can measure how similar two embedding spaces are. The similarity between two embedding spaces is the mean of the local neighbourhood similarity of every point, which is the IoU of the 10 nearest neighbours. More info about comparing embedding spaces [here](http://vis.csail.mit.edu/pubs/embedding-comparator/).
 
 Compare two embedding spaces:
 
@@ -325,10 +355,13 @@ The `match_query` function returns the most similar indices for a given embeddin
 Once you have loaded your datasets, experiments and empedding spaces, you can analyze the results either by visualizing them on our Streamlit app or by following the Python API documentation and getting the indices.
 
 ### Streamlit
+
 Visualize your embedding spaces on a local Streamlit app with:
+
 ```console
 vectory run
 ```
+
 The GUI dependencies are required to view the Streamlit app.
 
 # License
