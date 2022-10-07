@@ -32,7 +32,7 @@ def download_demo_data(
     if not os.path.isdir(data_path):
         os.makedirs(data_path)
 
-    base_url = f"https://vectory-demo-data.s3.amazonaws.com/{dataset_name}/"
+    base_url = "https://github.com/pentoai/vectory/releases/download/v0.0.1/"
 
     # Download dataset
     csv_name = f"{dataset_name}-data.csv"
