@@ -136,7 +136,8 @@ def compare_embedding_spaces(
     metric_b : str, optional
         The metric to use for the second embedding space, by default "euclidean"
     allow_precompute_knn : bool, optional
-        Whether to allow precomputing the KNN for the given embedding spaces, by default False
+        Whether to allow precomputing the KNN for the given embedding spaces, by
+        default False
     histogram : bool, optional
         Whether to plot a histogram of the similarities, by default False
 

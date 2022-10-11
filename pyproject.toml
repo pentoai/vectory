@@ -29,7 +29,7 @@ Pillow = "^9.2.0"
 coolname = "^1.1.0"
 tabulate = "^0.8.10"
 psutil = "^5.9.1"
-python-on-whales = "^0.52.0"
+docker-compose = "^1.29.2"
 
 [tool.poetry.dev-dependencies]
 black = "*"

@@ -3,3 +3,4 @@ RUN elasticsearch-plugin install --batch https://github.com/alexklibisz/elastikn
 
 WORKDIR /usr/share/elasticsearch/
 
+HEALTHCHECK --interval=10s --timeout=30s --start-period=10s CMD curl --fail http://localhost:9200 || exit 1

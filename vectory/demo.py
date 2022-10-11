@@ -2,7 +2,7 @@ import os
 from dataclasses import dataclass
 from enum import Enum
 from pathlib import Path
-from typing import List, Type, Union
+from typing import List, Union
 
 import requests
 import typer
@@ -22,17 +22,17 @@ class ModelInfo:
 
 class DemoDatasets(str, Enum):
     cv = "tiny-imagenet-200"
-    nlp = "imbd"
+    nlp = "imdb"
 
 
 def download_demo_data(
-    dataset_name: str, models_info: List[Type[ModelInfo]], data_path: Union[str, Path]
+    dataset_name: str, models_info: List[ModelInfo], data_path: Union[str, Path]
 ) -> None:
 
     if not os.path.isdir(data_path):
         os.makedirs(data_path)
 
-    base_url = "https://github.com/pentoai/vectory/releases/download/v0.0.1/"
+    base_url = "https://github.com/pentoai/vectory/releases/download/v0.1.1/"
 
     # Download dataset
     csv_name = f"{dataset_name}-data.csv"
@@ -48,7 +48,9 @@ def download_demo_data(
     for model_info in models_info:
         # Download experiment
         if not os.path.isfile(os.path.join(data_path, f"{model_info.name}.npy")):
-            typer.secho(f"Downloading embeddings from {model_info.name}", fg="yellow")
+            typer.secho(
+                f"Downloading {model_info.name} generated embeddings", fg="yellow"
+            )
             r = requests.get(base_url + model_info.name + ".npy", stream=True)
             with open(
                 os.path.join(data_path, f"{model_info.name}.npy"), "wb"
