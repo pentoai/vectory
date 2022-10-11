@@ -175,7 +175,7 @@ vectory experiment delete [experiment_name]
 Embedding Spaces:
 
 ```console
-vectory space delete [embedding_space_name]
+vectory embeddings delete [embedding_space_name]
 ```
 
 You can delete elements associated to these objects and their respective indices adding `--recursive`.
