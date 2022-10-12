@@ -1,5 +1,6 @@
 import json
 import os
+from pathlib import Path
 from typing import Optional, Union
 
 from vectory.datasets import Dataset
@@ -26,7 +27,7 @@ class Experiment:
         model: Optional[str] = None,
         name: Optional[str] = None,
         params: Optional[Union[dict, str]] = None,
-        params_path: Optional[str] = None,
+        params_path: Optional[Union[str, Path]] = None,
     ) -> "Experiment":
         try:
             experiment = ExperimentModel.get(name=name)
@@ -47,7 +48,7 @@ class Experiment:
         model: Optional[str] = None,
         name: Optional[str] = None,
         params: Optional[Union[dict, str]] = None,
-        params_path: Optional[str] = None,
+        params_path: Optional[Union[str, Path]] = None,
     ) -> ExperimentModel:
         if params_path is not None and params is not None:
             raise TypeError("Only one of 'params' and 'param_path' should be given")

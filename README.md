@@ -19,18 +19,17 @@
   <img src="assets/overview.gif" alt="animated" />
 </p>
 
-<!-- ![overview](assets/overview.gif) -->
 
 Vectory provides a collection of tools to **track and compare embedding versions**.
 
-Being able to visualize and register each experiment is a crucial part of developing successful models. Vectory is a tool designed by and for machine learning engineers to handle embedding experiments with little overhead.
+Visualizing and registering each experiment is a crucial part of developing successful models. Vectory is a tool designed by and for machine learning engineers to handle embedding experiments with little overhead.
 
 ### Key features:
 
-- **Embedding linage**. Keep track of what data and models were used to generate embeddings.
+- **Embedding linage**. Keep track of the data and models used to generate embeddings.
 - **Compare performance**. Compare metrics between different vector spaces.
-- **Ease of use**. Easy usage through the CLI, Python and GUI interfaces.
-- **Extensibility**. It was built with extensibility in mind.
+- **Ease of use**. Easy usage through the CLI, Python, and GUI interfaces.
+- **Extensibility**. Built with extensibility in mind.
 - **Persistence**. Simple local state persistence using SQLite.
 
 # Table of Contents
@@ -49,70 +48,68 @@ All you need for Vectory to run is to install the package and Elasticsearch. You
 pip install vectory
 ```
 
+## Demo
+
+<p align="center">
+  <img src="assets/intro.gif" alt="animated" />
+</p>
+
+After installing Vectory, you can play with the demo cases to get a feel of the toolkit.
+
+- Tiny-ImageNet: A computer vision dataset set of embeddings made from pretrained models ResNet50 and ConvNext-tiny.
+- IMDB: A NLP dataset set of embeddings made from pretrained models BERT and RoBERTa.
+
+To set up the demo, run the following command:
+
+```console
+vectory demo
+```
+
+You can specify the demo dataset with the `dataset_name` argument. See `vectory demo --help` for more information.
+
+
+<p align="center">
+  <img src="assets/zoom.gif" alt="animated" />
+</p>
+
+
 ## Set up Elasticsearch
 
-What is Elasticsearch? It's a free high performance search engine, which is used for any kind of data.
+What is Elasticsearch? It's a free high-performance search engine used for many types of data.
 
 Vectory uses Elasticsearch to load embeddings and then search for them.
 
-To start the engine you will need to install Docker and start its daemon.
+To start the engine, you must install Docker and start its daemon.
 After that, just run:
 
 ```console
 vectory elastic up --detach
 ```
 
-and you can turn it off with:
+And you can turn it off with:
 
 ```console
 vectory elastic down
 ```
 
-# Demo
-
-<p align="center">
-  <img src="assets/intro.gif" alt="animated" />
-</p>
-
-After installing vectory with the GUI dependencies, you can play with the demo cases to get a feel of the toolkit.
-
-- Tiny-imagenet computer vision dataset embeddings made from pretrained models ResNet50 and ConvNext-tiny.
-- Imdb nlp dataset embeddings made from pretrained models BERT and RoBERTa.
-
-In order to download the data and set up the demo, run the following command:
-
-```console
-vectory demo
-```
-
-You can specify the demo dataset with the `--dataset-name` argument.
-
-Run the Streamlit viualization app:
-
-```console
-vectory run
-```
-
-<p align="center">
-  <img src="assets/zoom.gif" alt="animated" />
-</p>
-
 # Usage
 
 The key concepts needed to use Vectory are **datasets**, **experiments** and **embedding spaces**.
 
-A **dataset** is just a collection of data. You could have evaluation or training datasets. Evaluation datasets are required for Vectory to run, whereas training datasets are optional, desired for tracking purposes.
+A **dataset** is just a collection of data. You could have evaluation or training datasets. Evaluation datasets are required for Vectory to run, whereas training datasets are optional and desired for tracking purposes.
 
-Datasets are defined with a csv file. The csv file should have a header row, followed by a row for each data point. The columns may contain any information about the data point, but it is recommended that the first column is an identifier for the data point. The next columns could be labels, features, or any other information.
+You will need a CSV file to define a Datasets. The CSV file must have a header row, followed by a row for each data point in the dataset. The only requirement we ask of the CSV is to have at least an identifier column. The following columns could be labels, features, or any other information.
 
-An **experiment** is a machine learning model which has been trained with a particular dataset. You could create different experiments by varying the model and the dataset. As well as the training datasets, the experiments are optional and desired for tracking purposes.
+An **experiment** is a machine learning model trained with a particular dataset. You can create different experiments by varying the model and the dataset. You can optionally specify a training dataset for tracking purposes.
 
-Together, they form an **embedding space**, which is just a 2-dimensional array with all the generated vectors (or features or embeddings) for a particular dataset using a particular experiment. They can be either `.npz` files or `.npy` files, we'll refer to them as `.npz` for simplicity. It must follow the same order as the evaluation dataset csv file.
+A Dataset and an Experiment form an **embedding space**, which is just a 2-dimensional array with all the generated vectors (namely, features or embeddings) for a particular dataset given an experiment. You will need to provide the embeddings in a file that can be either `.npz` or `.npy`.
+
+The important thing about these embedding files is that they must follow the same indexing as the evaluation dataset CSV file. To summarize, for every line in the dataset, there's an embedding in the `.npz` file.
 
 <details markdown="1">
 <summary> <b> Example </b> </summary>
 
-You could have an experiment, such as a ResNet model trained with the dataset Data1. Let’s call the generated embedding space ES1. But either you split your data or you get new data once in a while (or both), so this experiment will not only be used in a static dataset. You might want to use this experiment on Data2 then, generating a particular embedding space called ES2.
+You can have an experiment, such as a ResNet model trained with the dataset Data1. Let’s call the generated embedding space ES1. But either you split your data or you get new data once in a while (or both), so this experiment will not only be used in a static dataset. You might want to use this experiment on Data2 then, generating a particular embedding space called ES2.
 
 Vectory helps you to organize and analyze the obtained embeddings for each dataset and experiment.
 
@@ -120,45 +117,45 @@ Vectory helps you to organize and analyze the obtained embeddings for each datas
 
 ---
 
-## Command Line Interface
+# Command Line Interface
 
-### Create
+## Create
 
-Create datasets, experiments and embedding spaces:
+Create datasets, experiments, and embedding spaces:
 
 ```console
 vectory add --dataset [path_to_csv] --embeddings [path_to_npz]
 ```
 
-This is the most simple way to add them. In case you want to track your tests, you can specify the names of the elements, the dimension of the embedding space and the parameters of the model. You can see all the options with the `--help` flag.
+You can see all the options with the `--help` flag.
 
-### Load
+## Load
 
-Embedding spaces are mapped to Elasticsearch **indices**. To load the embeddings to Elasticsearch when creating the embedding space with the previous command, add `--load ` after designating the dataset, the embedding space and the parameters. This option for the `add` command only works for the default loading options. If you want to load the embeddings with different options, you can use the `load` command.
+Embedding Spaces are links to ElasticSearch **indices**. To load the embeddings to ElasticSearch when creating the Embedding Space, add `--load ` after setting the dataset, the Embedding Space, and the parameters. This option for the `add` command only works for the default loading options. You can use the load command to load the embeddings with different options.
 
-Load independentely an embedding space to Elasticsearch:
+To separately load an Embedding Space to ElasticSearch:
 
 ```console
 vectory embeddings load [index_name] [embedding_space_name]
 ```
 
-You can specify the model name, the similarity function, the number of threads, the chunk size and the hyperparameters for the kNN search. You can see all the options with the `--help` flag.
+You can specify the model name, the similarity function, the number of threads, the chunk size, and the hyperparameters for the kNN search. You can see all the options with the `--help` flag.
 
-### Search
+## Search
 
-Get all your datasets, experiments, embedding spaces and indices:
+**List all** your datasets, experiments, embedding spaces, and indices:
 
 ```console
 vectory ls
 ```
 
-List all the indices:
+**List the indexes:**
 
 ```console
 vectory embeddings list-indices
 ```
 
-### Delete
+## Delete
 
 Delete datasets:
 
@@ -166,27 +163,27 @@ Delete datasets:
 vectory dataset delete [dataset_name]
 ```
 
-Experiments:
+**Experiments:**
 
 ```console
 vectory experiment delete [experiment_name]
 ```
 
-Embedding Spaces:
+**Embedding Spaces:**
 
 ```console
 vectory embeddings delete [embedding_space_name]
 ```
 
-You can delete elements associated to these objects and their respective indices adding `--recursive`.
+You can delete elements associated with these objects and their respective indices by adding the `--recursive` flag.
 
-Indices:
+**Indices:**
 
 ```console
 vectory embeddings delete-index [index_name]
 ```
 
-All indices:
+**All indices:**
 
 ```console
 vectory embeddings delete-all-indices
@@ -194,25 +191,25 @@ vectory embeddings delete-all-indices
 
 ### Comparing embedding spaces
 
-With Vectory you can measure how similar two embedding spaces are. The similarity between two embedding spaces is the mean of the local neighbourhood similarity of every point, which is the IoU of the 10 nearest neighbours.
+With Vectory you can measure how similar two embedding spaces are. The similarity between two embedding spaces is the mean of the local neighborhood similarity of every point, which is the IoU of the ten nearest neighbors.
 
-Basically, in order to compare 2 embedding spaces Vectory computes the 10 nearest neighbours for every data point for both embedding spaces, get the IoU for each group of 10 nearest neighbours obtained and shows the distribution of the IoU values. Also, we compute the mean of the IoU values in order to provide a single value to compare the two embedding spaces.
+To compare two embedding spaces, Vectory computes the ten nearest neighbors for every data point for both embedding spaces, getting the IoU for each group of ten nearest neighbors obtained. Then, it shows the distribution of the IoU values. Also, we compute the mean of the IoU values to provide a single value to compare the two embedding spaces.
 
-More info about comparing embedding spaces [here](http://vis.csail.mit.edu/pubs/embedding-comparator/).
+To learn more about comparing embedding spaces, check out [this embedding-comparator](http://vis.csail.mit.edu/pubs/embedding-comparator/) article.
 
-Compare two embedding spaces using:
+To compare two embedding spaces, use:
 
 ```console
 vectory compare [embedding_space_1_name] [embedding_space_2_name] --precompute
 ```
 
-You can specify the metric to use for kNN search in each of the embedding spaces, calculate similarity histogram and allow precoumpute.
+You can specify the metric for the kNN search in each embedding space. You can also calculate the similarity histogram.
 
-## Python API
+# Python API
 
-### Create
+## Create
 
-Create datasets, experiments and an embedding space from them.
+Create datasets, experiments, and an embedding space.
 
 ```python
 from vectory.datasets import Dataset
@@ -238,9 +235,9 @@ embedding_space = EmbeddingSpace.get_or_create(
 )
 ```
 
-The train dataset is optional, but it is recommended to track the training process.
+The `train_dataset` parameter is optional, but we recommend to track the training process.
 
-Load an index on elastic search for an embedding space:
+Load an index on ElasticSearch for an embedding space:
 
 ```python
 from vectory.indices import load_index
@@ -251,13 +248,13 @@ load_index(
 )
 ```
 
-The `dataset`, `experiment` and `embedding_space` objects have the `.model.name` attribute, so both the variable and the attribute can be used for specifying the name.
+You can get the names of `dataset`, `experiment`, and `embedding_space` objects using `model.name`.
 
-Additionally, you can specify the desired mapping to load the index with. This determies whether `cosine` or `euclidean` similarity will be used for the kNN search, as well as the model for the kNN search. Using an `exact` model instead of the `lsh` option will make the search slower, but more accurate. The `lsh` model and the `cosine` similarity are the default options. To see all the available mappings, check the possible options from `vectory.es.api.Mapping`.
+Additionally, you can specify the desired mapping to load the index. You can choose the mapping to use `cosine` or `euclidean` similarity for the kNN search. Searching will be slower but more accurate when using an `exact` model instead of the `lsh`. The `lsh` model and the `cosine` similarity are the default options. To see all the available mappings, check the possible options from `vectory.es.api.Mapping`.
 
-### Search
+## Search
 
-Get all your datasets, experiments, embedding spaces and indices:
+Get all your datasets, experiments, embedding spaces, and indices:
 
 ```python
 from vectory.db.models import (
@@ -274,15 +271,15 @@ spaces = Query(EmbeddingSpaceModel).get()
 indices = Query(ElasticSearchIndexModel).get()
 ```
 
-You can also get a specific dataset, expeiment, space or index by specifying an attribute:
+You can also get a specific dataset, experiment, space, or index by specifying an attribute:
 
 ```python
 dataset = Query(DatasetModel).get(name=DATASET_NAME)[0]
 ```
 
-### Delete
+## Delete
 
-Delete old datasets and its indices if wanted:
+Delete old datasets and their indices:
 
 ```python
 from vectory.db.models import  DatasetModel, Query
@@ -291,13 +288,13 @@ dataset = Query(DatasetModel).get(name=DATASET_NAME)[0]
 dataset.delete_instance(recursive=True)
 ```
 
-Keep in mind that if the `recursive` option is set to `True`, the experiments, spaces and indices associated with the dataset will be deleted as well.
+Setting the `recursive` option to `True` deletes the experiments, spaces, and indices associated with the dataset.
 
 The same can be done for experiments, embedding spaces and indices by using the `delete_instance` method on the correct object.
 
-### Compare
+## Compare
 
-With Vectory you can measure how similar two embedding spaces are. The similarity between two embedding spaces is the mean of the local neighbourhood similarity of every point, which is the IoU of the 10 nearest neighbours. More info about comparing embedding spaces [here](http://vis.csail.mit.edu/pubs/embedding-comparator/).
+With Vectory you can measure how similar two embedding spaces are. The similarity between two embedding spaces is the mean of the local neighborhood similarity of every point, which is the IoU of the ten nearest neighbors. 
 
 Compare two embedding spaces:
 
@@ -315,11 +312,11 @@ similarity, _, fig, _ = compare_embedding_spaces(
 
 The `metric_a` and `metric_b` parameters are either `euclidean` or `cosine`. The `allow_precompute_knn` parameter is set to `True` to allow precomputing the bulk operations for the similarity computation.
 
-The `spaces_similarity` variable contains the similarity between the two embedding spaces. The `id_similarity_dict` variable contains the similarity scores for every point in the embedding spaces.
+The `spaces_similarity` variable contains the similarity between the two embedding spaces. The `id_similarity_dict` variable has the similarity scores for every point in the embedding spaces.
 
-An additional argument can be passed to the `compare_embedding_spaces` function, which is `histogram`. If set to `True`, the function will show a histogram of the similarity scores, otherwise, an empty figure is returned. The `fig` and `ax` variables are the figure and axis of the histogram.
+Setting the `histogram` parameter to `True` in the `compare_embedding_spaces` function will show a histogram of the similarity scores. The `fig` and `ax` variables are the figure and axis of the histogram.
 
-### Reduce dimensionality
+## Reduce dimensionality
 
 Reduce the dimensionality to 2D of an embedding space:
 
@@ -335,9 +332,9 @@ embeddings, rows, index = get_index(
 df = calculate_points(DIMENSIONAL_REDUCTION_MODEL, embeddings, rows)
 ```
 
-The `calculate_points` function reduces the dimensionality of the embeddings using the `DIMENSIONAL_REDUCTION_MODEL` model. It can be either `UMAP`, `PCA` or `PCA + UMAP`. It returns a DataFrame with the reduced dimensionality points and the data contained in the dataset's csv.
+The `calculate_points` function reduces the dimensionality of the embeddings using the `DIMENSIONAL_REDUCTION_MODEL` model. It can be either `UMAP`, `PCA`, or `PCA +` UMAP`. It returns a DataFrame with the reduced dimensionality points and the data contained in the dataset's CSV file.
 
-### Get similar indices
+## Get similar indices
 
 Get the most similar indices for a given embedding:
 
@@ -348,15 +345,15 @@ from vectory.indices import match_query
 similarity_results, _ = match_query(indices_name=[INDEX_NAME], query_id=EMBEDDING_INDEX)
 ```
 
-The `match_query` function returns the most similar indices for a given embedding and the index of the embedding. The `indices_name` parameter is a list of indices names, and the `query_id` parameter is the id of the embedding to search for. From these results, you can get the most similar indices and their scores. The `similarity_results` variable contains a dictionary with the indices names as keys and a list of tuples with the most similar indices and their scores as values.
+The `match_query` function returns the most similar indices for a given embedding and the index of the embedding. The `indices_name` parameter is a list of indices names, and the `query_id` parameter is the id of the embedding to search. You can get the most similar indices and their scores from these results. The `similarity_results` variable contains a dictionary with the indices' names as keys and a list of tuples with the most similar indices and their scores as values.
 
-## Visualization
+# Visualization
 
-Once you have loaded your datasets, experiments and empedding spaces, you can analyze the results either by visualizing them on our Streamlit app or by following the Python API documentation and getting the indices.
+Once you have loaded your datasets, experiments, and embedding spaces, you can analyze the results by visualizing them on our Streamlit app or by following the Python API documentation and getting the indices.
 
-### Streamlit
+## Streamlit
 
-Visualize your embedding spaces on a local Streamlit app with:
+Visualize your embedding spaces on a local Streamlit app:
 
 ```console
 vectory run

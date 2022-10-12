@@ -1,12 +1,9 @@
-import os
 from pathlib import Path
 from typing import Any, List, Optional, Tuple
 
 import matplotlib.pyplot as plt
 import typer
 from playhouse.shortcuts import model_to_dict
-from streamlit import config as st_config
-from streamlit.bootstrap import run as st_run
 from tabulate import tabulate
 from vectory.datasets import Dataset
 from vectory.db.models import (
@@ -18,20 +15,18 @@ from vectory.db.models import (
     KNNBulkRelationship,
     Query,
     create_db_tables,
+    database,
 )
 from vectory.demo import DemoDatasets, ModelInfo, download_demo_data, prepare_demo_data
+from vectory.es import docker
 from vectory.es.api import Mapping
 from vectory.es.client import ElasticKNNClient
-from vectory.es.docker import app as es_app
 from vectory.experiments import Experiment
 from vectory.indices import delete_index, list_indices, load_index
 from vectory.spaces import EmbeddingSpace, compare_embedding_spaces
-
-app = typer.Typer()
-app.add_typer(es_app, name="elastic")
+from vectory.visualization.run import run_streamlit
 
 create_db_tables()
-
 
 MODELS_DB = {
     "dataset": DatasetModel,
@@ -46,18 +41,42 @@ MODELS = {
     "space": EmbeddingSpace,
 }
 
+app = typer.Typer()
+elastic_app = typer.Typer()
+
+
+@elastic_app.command()
+def up(
+    detach: bool = typer.Option(
+        False, "--detach", "-d", help="Run elasticsearch in the background"
+    )
+):
+    """Start elasticsearch inside a docker container."""
+    typer.secho("Starting vectory's elasticsearch...", fg=typer.colors.GREEN)
+    docker.up(detach=detach)
+
+
+@elastic_app.command()
+def down():
+    """Stop elasticsearch."""
+    typer.secho("Stopping vectory's elasticsearch...", fg=typer.colors.GREEN)
+    docker.down()
+
+
+app.add_typer(elastic_app, name="elastic")
+
 
 @app.command()
 def demo(
-    dataset_name: Optional[DemoDatasets] = typer.Option(
+    dataset_name: DemoDatasets = typer.Argument(
         DemoDatasets.cv,
         help=(
             "Name of the dataset for the demo. Can be either 'tiny-imagenet-200' for a "
-            "computer vision demo or 'imbd' for a nlp one. If none given, the computer "
+            "computer vision demo or 'imdb' for a nlp one. If none given, the computer "
             "vision demo will be chosen."
         ),
     ),
-    data_path: Optional[Path] = typer.Option(
+    data_path: Path = typer.Option(
         "data/demo",
         "--data-path",
         help="Path to the demo files",
@@ -65,16 +84,24 @@ def demo(
         dir_okay=True,
         resolve_path=True,
     ),
+    run: bool = typer.Option(
+        True,
+        "--run/--no-run",
+        help=(
+            "Run the visualizations after data has been prepared. "
+            "A shortcut to `vectory run`"
+        ),
+    ),
 ):
     typer.secho("This might take a while...", fg=typer.colors.MAGENTA)
-    data_path = os.path.join(data_path, dataset_name)
+    data_path = data_path / dataset_name.value
 
-    if dataset_name == "tiny-imagenet-200":
+    if dataset_name == DemoDatasets.cv:
         models_info = [
             ModelInfo(name="resnet50", dims=512, demodataset=DemoDatasets.cv),
             ModelInfo(name="convnext-tiny", dims=768, demodataset=DemoDatasets.cv),
         ]
-    elif dataset_name == "imbd":
+    elif dataset_name == DemoDatasets.nlp:
         models_info = [
             ModelInfo(name="bert", dims=1024, demodataset="nlp"),
             ModelInfo(name="roberta", dims=768, demodataset="nlp"),
@@ -82,7 +109,18 @@ def demo(
 
     download_demo_data(dataset_name.value, models_info, data_path)
 
-    prepare_demo_data(dataset_name.value, models_info, data_path)
+    typer.secho("Starting vectory's elasticsearch...", fg=typer.colors.GREEN)
+    docker.up(detach=True, wait=True)
+
+    typer.secho(f"Loading {dataset_name.value} data", fg=typer.colors.GREEN)
+    with database.atomic():
+        prepare_demo_data(dataset_name.value, models_info, data_path)
+
+    database.close()
+
+    if run:
+        typer.secho("Running visualizations Streamlit app", fg=typer.colors.GREEN)
+        run_streamlit()
 
 
 @app.command()
@@ -173,8 +211,8 @@ def add(
 
     if not experiment_name:
         typer.confirm(
-            "A random experiment will be generated since no experiment-name was given. Do"
-            " you want to continue?",
+            "A random experiment will be generated since no experiment-name was given. "
+            "Do you want to continue?",
             abort=True,
         )
 
@@ -184,64 +222,41 @@ def add(
         )
         train_dataset = train_dataset if train_dataset else None
 
-    new_dataset = len(Query(DatasetModel).get(empty_ok=True, csv_path=csv_path)) == 0
-
-    dataset = Dataset.get_or_create(
-        name=dataset_name, csv_path=csv_path, id_field=id_field
-    )
-
-    try:
-        if train_dataset:
-            train_dataset = Query(DatasetModel).get(name=train_dataset)[0]
-            model_name = "NA" if not model_name else model_name
-            new_experiment = (
-                len(
-                    Query(ExperimentModel).get(
-                        empty_ok=True,
-                        train_dataset=train_dataset,
-                        model=model_name,
-                        name=experiment_name,
-                    )
-                )
-                == 0
-            )
-        else:
-            new_experiment = True
-        experiment = Experiment.get_or_create(
-            train_dataset=train_dataset,
-            model=model_name,
-            name=experiment_name,
-            params_path=params_path,
-        )
-
-        embedding_space = EmbeddingSpace.create(
-            npz_path=str(npz_path),
-            dims=dims,
-            experiment=experiment,
-            dataset=dataset,
-            name=embedding_space_name,
-        )
-
-        if load:
-            load_index(
-                index_name=embedding_space.model.name,
-                embedding_space_name=embedding_space.model.name,
+    with database.atomic() as trx:
+        try:
+            dataset = Dataset.get_or_create(
+                name=dataset_name, csv_path=csv_path, id_field=id_field
             )
 
-        typer.secho("Done", fg="green")
+            experiment = Experiment.get_or_create(
+                train_dataset=train_dataset,
+                model=model_name,
+                name=experiment_name,
+                params_path=params_path,
+            )
 
-    except Exception as e:
+            embedding_space = EmbeddingSpace.create(
+                npz_path=str(npz_path),
+                dims=dims,
+                experiment=experiment,
+                dataset=dataset,
+                name=embedding_space_name,
+            )
+        except Exception as ex:
+            trx.rollback()
+            typer.secho(
+                f"Couldn't add dataset, experiment or embedding: {ex}", fg="red"
+            )
 
-        if new_dataset:
-            dataset.delete_instance(recursive=True)
-        if new_experiment:
-            try:
-                experiment.delete_instance(recursive=True)
-            except NameError:
-                pass
+            return
 
-        typer.secho("Couldn't add dataset, experiment or embedding", fg="red")
-        raise (e)
+    if load:
+        load_index(
+            index_name=embedding_space.model.name,
+            embedding_space_name=embedding_space.model.name,
+        )
+
+    typer.secho("Done", fg="green")
 
 
 def _models_to_data(models: List[BaseModel]) -> Tuple[List[str], List[Any]]:
@@ -372,9 +387,7 @@ def compare(
 @app.command()
 def run():
     """Run the Streamlit app"""
-    app_path = os.path.join(os.path.dirname(__file__), "visualization", "main.py")
-    st_config.set_option("server.headless", True)
-    st_run(app_path, "", [], [])
+    run_streamlit()
 
 
 @embeddings_app.command()
@@ -405,7 +418,7 @@ def load(
     number_of_shards: int = typer.Option(
         1, "--num-shards", "-n", help="Number of shards to use"
     ),
-) -> None:
+):
     """Load the embeddings into elasticsearch"""
     es = ElasticKNNClient()
 
