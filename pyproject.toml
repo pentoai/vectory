@@ -1,9 +1,36 @@
 [tool.poetry]
 name = "vectory"
-version = "0.1.3"
+version = "0.1.4"
 description = "Streamline the benchmark and experimentation process of your models that rely on generating embeddings"
 authors = ["Pento <hello@pento.ai>"]
 readme = "README.md"
+license = "MIT"
+homepage = "https://github.com/pentoai/vectory"
+repository = "https://github.com/pentoai/vectory"
+keywords = [
+    "machine-learning",
+    "embeddings",
+    "visualization",
+    "feature similarity",
+    "feature store"
+]
+classifiers= [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Education",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT License",
+    "Natural Language :: English",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.7",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python",
+    "Topic :: Scientific/Engineering :: Mathematics",
+    "Topic :: Scientific/Engineering :: Visualization",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Topic :: Software Development :: Libraries",
+]
 
 [tool.poetry.scripts]
 vectory = "vectory.cli:app"
