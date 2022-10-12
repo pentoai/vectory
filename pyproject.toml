@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "vectory"
-version = "0.1.4"
+version = "0.1.5"
 description = "Streamline the benchmark and experimentation process of your models that rely on generating embeddings"
 authors = ["Pento <hello@pento.ai>"]
 readme = "README.md"
@@ -32,7 +32,7 @@ classifiers= [
     "Topic :: Software Development :: Libraries",
 ]
 
-include = ["docker-compose.yml", "Dockerfile", ".dockerignore", "troubleshooting.md"]
+include = ["docker-compose.yml", "Dockerfile", ".dockerignore", "TROUBLESHOOTING.md"]
 
 [tool.poetry.scripts]
 vectory = "vectory.cli:app"

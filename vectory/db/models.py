@@ -4,13 +4,13 @@ from typing import Generic, List, Set, Type, TypeVar
 
 from peewee import CharField, DateTimeField, IntegerField, Model
 from playhouse.sqlite_ext import ForeignKeyField, JSONField, SqliteExtDatabase
+from vectory.utils import get_vectory_dir
 
-default_folder_path = os.path.join(os.path.expanduser("~"), ".vectory")
-db_path = os.path.join(default_folder_path, "main.db")
+DB_PATH = get_vectory_dir() / "main.db"
 
 
 database = SqliteExtDatabase(
-    db_path,
+    DB_PATH,
     pragmas={
         "journal_mode": "off",
         "synchronous": 0,
@@ -216,8 +216,8 @@ class KNNBulkStorage(BaseModel):
 
 
 def create_db_tables():
-    if not os.path.exists(default_folder_path):
-        os.makedirs(default_folder_path)
+    if not DB_PATH.parent.exists():
+        os.makedirs(DB_PATH.parent, exist_ok=True)
         with database:
             database.create_tables(
                 [

@@ -80,7 +80,7 @@ def selection(dataset):
                 selected_emb_space, model=model, similarity=similarity
             )
 
-        except:
+        except Exception:
             st.warning(
                 "There isn't any loaded index from the embedding space "
                 + f"'{selected_emb_space}', with model: '{model}' "
@@ -450,7 +450,11 @@ def main():
                 most_similar_indices_2, scores_2 = calculate_indices(
                     selected_vector, index_2
                 )
-                intersection = set(most_similar_indices_1) & set(most_similar_indices_1)
+
+                # intersection = (
+                #     set(most_similar_indices_1) & set(most_similar_indices_1)
+                # )
+
                 col1, col2 = st.columns(2)
                 if df_1 is not None:
 

@@ -24,6 +24,7 @@ from vectory.es.client import ElasticKNNClient
 from vectory.experiments import Experiment
 from vectory.indices import delete_index, list_indices, load_index
 from vectory.spaces import EmbeddingSpace, compare_embedding_spaces
+from vectory.utils import get_vectory_dir
 from vectory.visualization.run import run_streamlit
 
 create_db_tables()
@@ -77,7 +78,7 @@ def demo(
         ),
     ),
     data_path: Path = typer.Option(
-        "data/demo",
+        get_vectory_dir() / "demo",
         "--data-path",
         help="Path to the demo files",
         file_okay=False,

@@ -4,7 +4,7 @@ from enum import Enum
 from pathlib import Path
 from typing import List, Union
 
-import requests
+import requests  # type: ignore
 import typer
 from vectory.datasets import Dataset
 from vectory.db.models import EmbeddingSpaceModel
@@ -30,7 +30,7 @@ def download_demo_data(
 ) -> None:
 
     if not os.path.isdir(data_path):
-        os.makedirs(data_path)
+        os.makedirs(data_path, exist_ok=True)
 
     base_url = "https://github.com/pentoai/vectory/releases/download/v0.1.1/"
 
@@ -71,13 +71,7 @@ def prepare_demo_data(
 
     dataset = Dataset.get_or_create(
         name=dataset_name,
-        csv_path=str(
-            Path(__file__).parent.parent
-            / "data"
-            / "demo"
-            / dataset_name
-            / f"{dataset_name}-data.csv"
-        ),
+        csv_path=str(Path(data_path) / f"{dataset_name}-data.csv"),
         id_field="_idx",
     )
     typer.secho(f"Dataset {dataset_name} created", fg="yellow")
