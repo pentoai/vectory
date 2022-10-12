@@ -37,7 +37,7 @@ Visualizing and registering each experiment is a crucial part of developing succ
 1. [Installation](#installation)
 2. [Demo](#demo)
 3. [Usage](#usage)
-4. [Troubleshooting](troubleshooting.md)
+4. [Troubleshooting](TROUBLESHOOTING.md)
 5. [License](#license)
 
 # Installation

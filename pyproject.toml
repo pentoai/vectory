@@ -32,6 +32,8 @@ classifiers= [
     "Topic :: Software Development :: Libraries",
 ]
 
+include = ["docker-compose.yml", "Dockerfile", ".dockerignore", "troubleshooting.md"]
+
 [tool.poetry.scripts]
 vectory = "vectory.cli:app"
 
