@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "vectory"
-version = "0.1.2"
+version = "0.1.3"
 description = "Streamline the benchmark and experimentation process of your models that rely on generating embeddings"
 authors = ["Pento <hello@pento.ai>"]
 readme = "README.md"
@@ -9,7 +9,7 @@ readme = "README.md"
 vectory = "vectory.cli:app"
 
 [tool.poetry.dependencies]
-python = ">=3.7.1,<=3.9.7"
+python = ">=3.7.1,<3.11"
 elasticsearch = "7.16.3"
 tqdm = "^4.61.1"
 typer = "^0.4.0"
