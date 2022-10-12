@@ -1,4 +1,3 @@
-import os
 from pathlib import Path
 from typing import Any, List, Optional, Tuple
 
@@ -16,6 +15,7 @@ from vectory.db.models import (
     KNNBulkRelationship,
     Query,
     create_db_tables,
+    database,
 )
 from vectory.demo import DemoDatasets, ModelInfo, download_demo_data, prepare_demo_data
 from vectory.es import docker
@@ -113,7 +113,10 @@ def demo(
     docker.up(detach=True, wait=True)
 
     typer.secho(f"Loading {dataset_name.value} data", fg=typer.colors.GREEN)
-    prepare_demo_data(dataset_name.value, models_info, data_path)
+    with database.atomic():
+        prepare_demo_data(dataset_name.value, models_info, data_path)
+
+    database.close()
 
     if run:
         typer.secho("Running visualizations Streamlit app", fg=typer.colors.GREEN)
@@ -219,64 +222,41 @@ def add(
         )
         train_dataset = train_dataset if train_dataset else None
 
-    new_dataset = len(Query(DatasetModel).get(empty_ok=True, csv_path=csv_path)) == 0
-
-    dataset = Dataset.get_or_create(
-        name=dataset_name, csv_path=csv_path, id_field=id_field
-    )
-
-    try:
-        if train_dataset:
-            train_dataset = Query(DatasetModel).get(name=train_dataset)[0]
-            model_name = "NA" if not model_name else model_name
-            new_experiment = (
-                len(
-                    Query(ExperimentModel).get(
-                        empty_ok=True,
-                        train_dataset=train_dataset,
-                        model=model_name,
-                        name=experiment_name,
-                    )
-                )
-                == 0
-            )
-        else:
-            new_experiment = True
-        experiment = Experiment.get_or_create(
-            train_dataset=train_dataset,
-            model=model_name,
-            name=experiment_name,
-            params_path=params_path,
-        )
-
-        embedding_space = EmbeddingSpace.create(
-            npz_path=str(npz_path),
-            dims=dims,
-            experiment=experiment,
-            dataset=dataset,
-            name=embedding_space_name,
-        )
-
-        if load:
-            load_index(
-                index_name=embedding_space.model.name,
-                embedding_space_name=embedding_space.model.name,
+    with database.atomic() as trx:
+        try:
+            dataset = Dataset.get_or_create(
+                name=dataset_name, csv_path=csv_path, id_field=id_field
             )
 
-        typer.secho("Done", fg="green")
+            experiment = Experiment.get_or_create(
+                train_dataset=train_dataset,
+                model=model_name,
+                name=experiment_name,
+                params_path=params_path,
+            )
 
-    except Exception as e:
+            embedding_space = EmbeddingSpace.create(
+                npz_path=str(npz_path),
+                dims=dims,
+                experiment=experiment,
+                dataset=dataset,
+                name=embedding_space_name,
+            )
+        except Exception as ex:
+            trx.rollback()
+            typer.secho(
+                f"Couldn't add dataset, experiment or embedding: {ex}", fg="red"
+            )
 
-        if new_dataset:
-            dataset.delete_instance(recursive=True)
-        if new_experiment:
-            try:
-                experiment.delete_instance(recursive=True)
-            except NameError:
-                pass
+            return
 
-        typer.secho("Couldn't add dataset, experiment or embedding", fg="red")
-        raise (e)
+    if load:
+        load_index(
+            index_name=embedding_space.model.name,
+            embedding_space_name=embedding_space.model.name,
+        )
+
+    typer.secho("Done", fg="green")
 
 
 def _models_to_data(models: List[BaseModel]) -> Tuple[List[str], List[Any]]:
@@ -438,7 +418,7 @@ def load(
     number_of_shards: int = typer.Option(
         1, "--num-shards", "-n", help="Number of shards to use"
     ),
-) -> None:
+):
     """Load the embeddings into elasticsearch"""
     es = ElasticKNNClient()
 
