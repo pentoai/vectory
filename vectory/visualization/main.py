@@ -86,6 +86,7 @@ def selection(dataset):
                 + f"'{selected_emb_space}', with model: '{model}' "
                 + f"and similarity: '{similarity}'"
             )
+            st.stop()
 
     return (
         dimensional_reduction_model,
