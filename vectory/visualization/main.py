@@ -86,6 +86,7 @@ def selection(dataset):
                 + f"'{selected_emb_space}', with model: '{model}' "
                 + f"and similarity: '{similarity}'"
             )
+            st.stop()
 
     return (
         dimensional_reduction_model,
@@ -371,7 +372,12 @@ def main():
 
             try:
                 knn, df_1, df_2 = compute_similarity(
-                    embedding_space_1_name, embedding_space_2_name, df_1, df_2
+                    embedding_space_name_1=embedding_space_1_name,
+                    embedding_space_name_2=embedding_space_2_name,
+                    similarity_1=similarity_1,
+                    similarity_2=similarity_2,
+                    df_1=df_1,
+                    df_2=df_2,
                 )
             except AssertionError:
                 if "coincidence" in df_1.columns:

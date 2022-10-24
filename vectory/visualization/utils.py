@@ -47,12 +47,15 @@ def pca_plus_umap_calc(embeddings):
 
 
 def calculate_points(model, embeddings, rows):
-    if model == "UMAP":
-        dim_2_points = umap_calc(embeddings)
-    elif model == "PCA":
-        dim_2_points = pca_calc(embeddings)
-    elif model == "PCA + UMAP":
-        dim_2_points = pca_plus_umap_calc(embeddings)
+    if embeddings.shape[1] == 2:
+        dim_2_points = embeddings
+    else:
+        if model == "UMAP":
+            dim_2_points = umap_calc(embeddings)
+        elif model == "PCA":
+            dim_2_points = pca_calc(embeddings)
+        elif model == "PCA + UMAP":
+            dim_2_points = pca_plus_umap_calc(embeddings)
 
     data = {}
     for rowl in rows:
@@ -129,16 +132,21 @@ def get_index(
 def compute_similarity(
     embedding_space_name_1: str,
     embedding_space_name_2: str,
+    similarity_1: str,
+    similarity_2: str,
     df_1: pd.DataFrame,
     df_2: pd.DataFrame,
 ) -> Tuple[dict, pd.DataFrame, pd.DataFrame]:
     """Compute similarity between two embedding spaces."""
 
+    similarity_1 = "euclidean" if similarity_1 == "l2" else "cosine"
+    similarity_2 = "euclidean" if similarity_2 == "l2" else "cosine"
+
     knn = KNNBulkOperations(embedding_space_name_1).space_similarity(
         embedding_space_name_1,
-        "euclidean",
+        similarity_1,
         embedding_space_name_2,
-        "euclidean",
+        similarity_2,
     )
     assert knn != {}
     knn_class = [map_coincidence(i) for i in knn.values()]
