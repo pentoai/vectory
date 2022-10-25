@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "vectory"
-version = "0.1.6"
+version = "0.1.7"
 description = "Streamline the benchmark and experimentation process of your models that rely on generating embeddings"
 authors = ["Pento <hello@pento.ai>"]
 readme = "README.md"
