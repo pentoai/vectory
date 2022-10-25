@@ -65,7 +65,7 @@ To set up the demo, run the following command:
 vectory demo
 ```
 
-You can specify the demo dataset with the `dataset_name` argument. See `vectory demo --help` for more information.
+You can specify the demo dataset by adding the name as the next argument. See `vectory demo --help` for more information.
 
 
 <p align="center">
