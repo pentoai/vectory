@@ -38,13 +38,24 @@ es_indices = es.list_indices()
 db_indices = Query(ElasticSearchIndexModel).get()
 ```
 
-`es_indices` and `db_indices` should be the same. If they aren't, you can delete the index from Elasticsearch and add it again to the database.
+`es_indices` and `db_indices` should be the same.
+
+If the index is on Elasticsearch but not in the database, delete it from Elasticsearch and try again.
 
 ```python
 from vectory.es.client import ElasticKNNClient
 
 es = ElasticKNNClient()
 es.delete_index(INDEX_NAME)
+```
+
+If the index is in the database but not on Elasticsearch, delete it from the database and try again.
+
+```
+from vectory.db.models import ElasticSearchIndexModel, Query
+
+index = Query(ElasticSearchIndexModel).get(name=INDEX_NAME)[0]
+index.delete_instance(recursive=False)
 ```
 
 ## Import errors
