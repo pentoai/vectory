@@ -10,7 +10,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: ["3.7.12", "3.8.10", "3.9.7"]
+        python-version: ["3.7.12", "3.8.10", "3.9.7", "3.11"]
         poetry-version: [1.2.0]
 
     steps:
