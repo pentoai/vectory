@@ -248,7 +248,9 @@ class Query(Generic[Q]):
             if "_path" in key:
                 condition[key] = os.path.abspath(condition[key])
 
-        condition = {k: v for k, v in condition.items() if v is not None}
+        condition = {
+            k: v for k, v in condition.items() if v is not None or k == "train_dataset"
+        }
 
         query = self.model.select()
         for column, value in condition.items():
